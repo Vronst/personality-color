@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kwestionariusz Stylu Interpersonalnego</title>
+<style>
+  :root{
+    --bg:#f7f7f5;
+    --panel:#ffffff;
+    --text:#1c1c1e;
+    --muted:#6b6b70;
+    --border:#e2e2e0;
+    --accent:#3b3b3f;
+    --shadeband:#eee;
+    --d:#d1453b; /* Działanie - red */
+    --e:#e0a800; /* Ekspresja - yellow */
+    --h:#3f9142; /* Harmonia - green */
+    --p:#2f6fb0; /* Porządkowanie - blue */
+    --btn-bg:#fff;
+    --btn-border:#ccc;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#17181a;
+      --panel:#222327;
+      --text:#eceef0;
+      --muted:#9a9ca1;
+      --border:#34353a;
+      --accent:#d8d9db;
+      --shadeband:#2c2d30;
+      --btn-bg:#2a2b2f;
+      --btn-border:#45464b;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    padding-block:24px;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  .wrap{
+    max-width:900px;
+    margin:0 auto;
+    padding-inline:16px;
+  }
+  h1{
+    font-size:1.5rem;
+    margin:0 0 4px;
+  }
+  p.lead{
+    color:var(--muted);
+    margin-top:0;
+    line-height:1.5;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+    margin-bottom:16px;
+  }
+  details.instructions summary{
+    cursor:pointer;
+    font-weight:600;
+  }
+  details.instructions{
+    margin-bottom:20px;
+  }
+  details.instructions ul{
+    margin:8px 0 0;
+    padding-left:20px;
+    color:var(--muted);
+    line-height:1.6;
+  }
+  .progress-bar-outer{
+    width:100%;
+    height:8px;
+    background:var(--border);
+    border-radius:4px;
+    overflow:hidden;
+    margin:8px 0 4px;
+  }
+  .progress-bar-inner{
+    height:100%;
+    background:var(--accent);
+    width:0%;
+    transition:width .2s ease;
+  }
+  .progress-label{
+    font-size:.85rem;
+    color:var(--muted);
+  }
+  .row-card{
+    margin-bottom:14px;
+  }
+  .row-title{
+    font-weight:600;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .row-number{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:24px;height:24px;
+    border-radius:50%;
+    background:var(--border);
+    font-size:.8rem;
+    flex:none;
+  }
+  .row-complete .row-number{
+    background:var(--accent);
+    color:var(--bg);
+  }
+  .boxes{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+  }
+  @media (max-width:640px){
+    .boxes{grid-template-columns:1fr 1fr;}
+  }
+  .box{
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    min-height:150px;
+  }
+  .box ul{
+    list-style:none;
+    margin:0 0 8px;
+    padding:0;
+    font-size:.82rem;
+    line-height:1.35;
+    color:var(--text);
+  }
+  .box ul li{
+    white-space:normal;
+  }
+  .ranks{
+    display:flex;
+    gap:4px;
+  }
+  .rank-btn{
+    flex:1;
+    padding:6px 0;
+    font-size:.85rem;
+    border-radius:6px;
+    border:1px solid var(--btn-border);
+    background:var(--btn-bg);
+    color:var(--text);
+    cursor:pointer;
+    font-weight:600;
+  }
+  .rank-btn:hover{
+    filter:brightness(1.08);
+  }
+  .rank-btn.selected{
+    background:var(--accent);
+    color:var(--bg);
+    border-color:var(--accent);
+  }
+  .letter-tag{
+    font-size:.7rem;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .letter-D{color:var(--d);}
+  .letter-E{color:var(--e);}
+  .letter-H{color:var(--h);}
+  .letter-P{color:var(--p);}
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin:16px 0;
+  }
+  button.primary{
+    background:var(--accent);
+    color:var(--bg);
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+    font-weight:600;
+    cursor:pointer;
+    font-size:.95rem;
+  }
+  button.primary:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+  }
+  button.ghost{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:10px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:.9rem;
+  }
+  #incompleteMsg{
+    color:var(--muted);
+    font-size:.85rem;
+  }
+  .results{
+    margin-top:8px;
+  }
+  .chart-row{
+    display:grid;
+    grid-template-columns:130px 1fr 46px;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .chart-label{
+    font-weight:600;
+    font-size:.9rem;
+  }
+  .chart-track{
+    position:relative;
+    height:26px;
+    background:var(--border);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .chart-band{
+    position:absolute;
+    top:0;bottom:0;
+    background:var(--shadeband);
+  }
+  .chart-fill{
+    position:absolute;
+    top:0;bottom:0;left:0;
+    border-radius:6px;
+    transition:width .3s ease;
+  }
+  .chart-gridline{
+    position:absolute;
+    top:0;bottom:0;
+    width:1px;
+    background:var(--border);
+  }
+  .chart-value{
+    font-weight:700;
+    text-align:right;
+    font-size:.95rem;
+  }
+  .chart-axis{
+    display:grid;
+    grid-template-columns:130px 1fr 46px;
+    gap:10px;
+    font-size:.72rem;
+    color:var(--muted);
+    margin-top:-6px;
+    margin-bottom:16px;
+  }
+  .axis-ticks{
+    position:relative;
+    height:14px;
+  }
+  .axis-tick{
+    position:absolute;
+    transform:translateX(-50%);
+  }
+  .interpretation{
+    font-size:.85rem;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .interp-list{
+    margin:10px 0 0;
+    padding-left:0;
+    list-style:none;
+  }
+  .interp-list li{
+    margin-bottom:6px;
+  }
+  footer{
+    color:var(--muted);
+    font-size:.78rem;
+    text-align:center;
+    margin-top:28px;
+    line-height:1.6;
+  }
+  .hint{
+    font-size:.8rem;
+    color:var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Kwestionariusz Stylu Interpersonalnego</h1>
+  <p class="lead">Dla każdego z 16 pytań przypisz rangi 4, 3, 2 i 1 czterem hasłom — 4 temu, które opisuje Cię najlepiej, 1 temu, które opisuje Cię najgorzej. Każda ranga może być użyta tylko raz w danym pytaniu (aplikacja pilnuje tego automatycznie).</p>
+
+  <details class="instructions">
+    <summary>Instrukcja</summary>
+    <ul>
+      <li><strong>4</strong> — ze wszystkich czterech pojęć, to słowo opisuje mnie najlepiej.</li>
+      <li><strong>3</strong> — z pozostałych trzech pojęć, to słowo opisuje mnie najlepiej.</li>
+      <li><strong>2</strong> — z pozostałych dwóch pojęć, to słowo bardziej mnie opisuje.</li>
+      <li><strong>1</strong> — ze wszystkich czterech pojęć, to słowo opisuje mnie najgorzej.</li>
+    </ul>
+  </details>
+
+  <div class="progress-label" id="progressLabel">Wypełniono 0 / 16 pytań</div>
+  <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+
+  <div id="rows"></div>
+
+  <div class="toolbar">
+    <button class="primary" id="calcBtn" disabled>Oblicz wynik</button>
+    <button class="ghost" id="resetBtn">Wyczyść wszystko</button>
+    <span id="incompleteMsg"></span>
+  </div>
+
+  <div class="card results" id="resultsCard" hidden>
+    <h2 style="margin-top:0;">Wyniki</h2>
+    <div id="chart"></div>
+    <p class="interpretation">
+      Wyniki powyżej <strong>40</strong> punktów wskazują na dużą skłonność do przejawiania danych zachowań.
+      Wyniki poniżej <strong>35</strong> punktów oznaczają, że wolisz tego typu zachowań unikać.
+      Wynik między <strong>35 a 40</strong> punktów (zacieniony obszar) oznacza, że możesz rzadziej przejawiać
+      dane zachowania lub działać w tym stylu bez zdecydowania.
+    </p>
+    <ul class="interp-list" id="interpList"></ul>
+  </div>
+
+  <footer>
+    Dane nigdzie nie są wysyłane — wszystko liczone jest lokalnie w przeglądarce i zapisywane wyłącznie
+    w pamięci tej przeglądarki (localStorage).
+  </footer>
+</div>
+
+<script>
+/* ---- Data: 16 rows x 4 boxes, letter per box taken from the scoring key ---- */
+const DATA = [
+  { boxes:[
+    {letter:'D', words:['Pewny siebie','Polegający na sobie','Pewny','Niezależny']},
+    {letter:'P', words:['Zdyscyplinowany','Systematyczny','Sprawny','Opanowany']},
+    {letter:'H', words:['Odpowiedzialny','Godny zaufania','Można na nim polegać','Punktualny']},
+    {letter:'E', words:['Ekspresyjny','Okazujący uczucia','Wyrażający się otwarcie','Gestykulujący']},
+  ]},
+  { boxes:[
+    {letter:'E', words:['Niezorganizowany','Bezładny','Nieuporządkowany','Chaotyczny']},
+    {letter:'H', words:['Nieśmiały','Wrażliwy','Spokojny','Łatwo go zakłopotać']},
+    {letter:'P', words:['Nieelastyczny','Nieugięty','Stały','Czepia się drobiazgów']},
+    {letter:'D', words:['Dominujący','Lubi rozkazywać','Narzucający zdanie','Nierefleksyjny']},
+  ]},
+  { boxes:[
+    {letter:'P', words:['Porządny','Staranny','Dba o porządek','Zorganizowany']},
+    {letter:'H', words:['Wspierający innych','Pomocny','Zachęca innych','Wyrozumiały']},
+    {letter:'E', words:['Kreatywny','Ma oryginalne pomysły','Ma dobrą intuicję','Pomysłowy']},
+    {letter:'D', words:['Produktywny','Ambitny','Dążący do celu','Skuteczny']},
+  ]},
+  { boxes:[
+    {letter:'H', words:['Uparty','Nie rezygnuje','Nonkonformista','Odporny na wpływ']},
+    {letter:'P', words:['Perfekcyjny','Dąży do doskonałości','Dba o szczegóły','Pedantyczny']},
+    {letter:'D', words:['Nieemocjonalny','Lekceważy emocje innych','Opanowany','Wyniosły']},
+    {letter:'E', words:['Impulsywny','Działający szybko','Energiczny','Bez hamulców']},
+  ]},
+  { boxes:[
+    {letter:'H', words:['Ciepły','Serdeczny','Życzliwy','Łagodny']},
+    {letter:'E', words:['Entuzjastyczny','Energiczny','Zapalczywy','Inspirujący']},
+    {letter:'D', words:['Dzielny','Odważny','Śmiały','Nieustraszony']},
+    {letter:'P', words:['Dokładny','Ostrożny','Precyzyjny','Nie popełnia błędów']},
+  ]},
+  { boxes:[
+    {letter:'P', words:['Nietowarzyski','Niekontaktowy','Skryły','Zamknięty w sobie']},
+    {letter:'D', words:['Niewdzięczny','Niedbały o innych','Nieczuły','Urażający']},
+    {letter:'E', words:['Egocentryczny','Zagadujący na śmierć','Ślepy na innych','Pochłonięty sobą']},
+    {letter:'H', words:['Bierny','Podporządkowany','Nieasertywny','Nieagresywny']},
+  ]},
+  { boxes:[
+    {letter:'E', words:['Rozmowny','Ekspresyjny','Towarzyski','Przyjazny']},
+    {letter:'D', words:['Zdecydowany','Wyraźny','Podejmujący decyzje','Działający']},
+    {letter:'P', words:['Analityczny','Badający','Analizujący','Oceniający']},
+    {letter:'H', words:['Lojalny','Wierny','Można na nim polegać','Stały']},
+  ]},
+  { boxes:[
+    {letter:'D', words:['Komenderujący','Mocny','Arogancki','Dogmatyczny']},
+    {letter:'E', words:['Niespokojny','Niecierpliwy','Nakręcony','Nie potrafi się zrelaksować']},
+    {letter:'H', words:['Powolny','Wolniejszy niż inni','Pracuje powoli','Zwlekający']},
+    {letter:'P', words:['Zamartwiający się','Lękliwy','Pełen obaw','Zmartwiony']},
+  ]},
+  { boxes:[
+    {letter:'D', words:['Pewny','Pewny siebie','Zdecydowany','Mocno osadzony']},
+    {letter:'P', words:['Krytycznie myślący','Właściwie analizuje','Dokładny','Precyzyjny']},
+    {letter:'H', words:['Przyjazny','Sympatyczny','Miły','Pogodny']},
+    {letter:'E', words:['Zabawowy','Żywy','Zabawny','Pełen humoru']},
+  ]},
+  { boxes:[
+    {letter:'E', words:['Niestały','Nieodpowiedzialny','Nie można na polegać','Niepunktualny']},
+    {letter:'H', words:['Zależny','Polega na innych','Niepewny siebie','Chwiejny']},
+    {letter:'P', words:['Surowy','Narzuca reguły','Niecierpliwy','Karzący']},
+    {letter:'D', words:['Nietaktowny','Nieokrzesany','Niedelikatny','Depczący po odciskach']},
+  ]},
+  { boxes:[
+    {letter:'P', words:['Planujący','Bada za i przeciw','Precyzyjny','Rozważny']},
+    {letter:'H', words:['Godny zaufania','Można na nim polegać','Uczciwy','Można mu zawierzyć']},
+    {letter:'E', words:['Otwarty','Szczery','Komunikatywny','Ekspresyjny']},
+    {letter:'D', words:['Śmiały','Odważny','Działający z rozmachem','Nieustraszony']},
+  ]},
+  { boxes:[
+    {letter:'H', words:['Niezdecydowany','Zbierający dane','Niewyraźny','Wahający się']},
+    {letter:'P', words:['Ostrożny','Nieufny','Dokładny','Rozważny']},
+    {letter:'D', words:['Twardy','Logiczny','Nieugięty','Dopnie swojego']},
+    {letter:'E', words:['Niekonsekwentny','Nielogiczny','Pełen sprzeczności','Kreatywny']},
+  ]},
+  { boxes:[
+    {letter:'H', words:['Tolerancyjny','Cierpliwy','Szanujący','Akceptujący']},
+    {letter:'E', words:['Wszechstronny','Elastyczny','Twórczy','Pomysłowy']},
+    {letter:'D', words:['Zdecydowany','Ambitny','Stanowczy','Nieustępliwy']},
+    {letter:'P', words:['Precyzyjny','Dokładny','Konkretny','Odpowiedzialny']},
+  ]},
+  { boxes:[
+    {letter:'P', words:['Drażliwy','Szybko się obraża','Wrażliwy','Łatwo urazić']},
+    {letter:'D', words:['Dominujący','Nieelastyczny','Agresywny','Rywalizacyjny']},
+    {letter:'E', words:['Wyszczekany','Gaduła','Mówi, co ma na myśli','Asertywny']},
+    {letter:'H', words:['Wycofany','Łatwy w kontakcie','Bierny','Niegroźny']},
+  ]},
+  { boxes:[
+    {letter:'E', words:['Wspaniałomyślny','Niesamolubny','Potrafi dawać','Lubi się dzielić']},
+    {letter:'D', words:['Bezpośredni','Przywódczy','Zdecydowany','Silny']},
+    {letter:'P', words:['Spostrzegawczy','Otwarty na informacje','Obserwujący','Rozróżniający']},
+    {letter:'H', words:['Tolerancyjny','Cierpliwy','Łatwo się przystosowuje','Dostosowujący się']},
+  ]},
+  { boxes:[
+    {letter:'D', words:['Kontrolujący','Manipulacyjny','Wymuszający','Dyrygujący']},
+    {letter:'E', words:['Nadgorliwy','Pochopny','Impulsywny','Niespokojny']},
+    {letter:'H', words:['Uczuciowy','Wrażliwy','Głęboko przeżywający','Delikatny']},
+    {letter:'P', words:['Nieufny','Podejrzliwy','Baczny','Nastawiony obronnie']},
+  ]},
+];
+
+const LETTER_META = {
+  D:{ name:'Działanie',      css:'--d' },
+  P:{ name:'Porządkowanie',  css:'--p' },
+  H:{ name:'Harmonia',       css:'--h' },
+  E:{ name:'Ekspresja',      css:'--e' },
+};
+
+const STORAGE_KEY = 'kolory_answers_v1';
+
+/* answers[rowIdx][boxIdx] = 4|3|2|1|null */
+let answers = loadAnswers();
+
+function loadAnswers(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed) && parsed.length === DATA.length) return parsed;
+    }
+  }catch(e){}
+  return DATA.map(row => row.boxes.map(()=>null));
+}
+
+function saveAnswers(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(answers)); }catch(e){}
+}
+
+const rowsEl = document.getElementById('rows');
+const progressBar = document.getElementById('progressLabel');
+const progressBarInner = document.getElementById('progressBar');
+const calcBtn = document.getElementById('calcBtn');
+const incompleteMsg = document.getElementById('incompleteMsg');
+const resultsCard = document.getElementById('resultsCard');
+const chartEl = document.getElementById('chart');
+const interpList = document.getElementById('interpList');
+
+function render(){
+  rowsEl.innerHTML = '';
+  DATA.forEach((row, rIdx) => {
+    const rowAnswers = answers[rIdx];
+    const complete = rowAnswers.every(v => v !== null);
+
+    const card = document.createElement('div');
+    card.className = 'card row-card' + (complete ? ' row-complete' : '');
+
+    const title = document.createElement('div');
+    title.className = 'row-title';
+    title.innerHTML = `<span class="row-number">${rIdx+1}</span> Pytanie ${rIdx+1}`;
+    card.appendChild(title);
+
+    const boxesEl = document.createElement('div');
+    boxesEl.className = 'boxes';
+
+    row.boxes.forEach((box, bIdx) => {
+      const boxEl = document.createElement('div');
+      boxEl.className = 'box';
+
+      const ul = document.createElement('ul');
+      box.words.forEach(w => {
+        const li = document.createElement('li');
+        li.textContent = w;
+        ul.appendChild(li);
+      });
+
+      const ranks = document.createElement('div');
+      ranks.className = 'ranks';
+      [4,3,2,1].forEach(v => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'rank-btn' + (rowAnswers[bIdx] === v ? ' selected' : '');
+        btn.textContent = v;
+        btn.addEventListener('click', () => onRank(rIdx, bIdx, v));
+        ranks.appendChild(btn);
+      });
+
+      boxEl.appendChild(ul);
+      boxEl.appendChild(ranks);
+      boxesEl.appendChild(boxEl);
+    });
+
+    card.appendChild(boxesEl);
+    rowsEl.appendChild(card);
+  });
+
+  updateProgress();
+}
+
+function onRank(rIdx, bIdx, value){
+  const rowAnswers = answers[rIdx];
+  if(rowAnswers[bIdx] === value){
+    rowAnswers[bIdx] = null; // toggle off
+  } else {
+    for(let k=0;k<rowAnswers.length;k++){
+      if(rowAnswers[k] === value) rowAnswers[k] = null;
+    }
+    rowAnswers[bIdx] = value;
+  }
+  saveAnswers();
+  render();
+  resultsCard.hidden = true;
+}
+
+function updateProgress(){
+  const completedRows = answers.filter(row => row.every(v => v !== null)).length;
+  progressBar.textContent = `Wypełniono ${completedRows} / ${DATA.length} pytań`;
+  progressBarInner.style.width = (completedRows/DATA.length*100) + '%';
+  const allDone = completedRows === DATA.length;
+  calcBtn.disabled = !allDone;
+  incompleteMsg.textContent = allDone ? '' : `Pozostało do uzupełnienia: ${DATA.length - completedRows} pytań`;
+}
+
+function computeSums(){
+  const sums = {D:0,P:0,H:0,E:0};
+  DATA.forEach((row, rIdx) => {
+    row.boxes.forEach((box, bIdx) => {
+      sums[box.letter] += answers[rIdx][bIdx];
+    });
+  });
+  return sums;
+}
+
+function interpretationFor(score){
+  if(score > 40) return 'Wysoka skłonność do przejawiania tych zachowań.';
+  if(score < 35) return 'Skłonność do unikania tych zachowań.';
+  return 'Zachowania przejawiane rzadziej lub bez zdecydowania.';
+}
+
+function renderChart(sums){
+  chartEl.innerHTML = '';
+  const MIN = 10, MAX = 70;
+  const BAND_LO = 35, BAND_HI = 40;
+  const ticks = [20,30,40,50,60];
+
+  const pct = v => ((v-MIN)/(MAX-MIN))*100;
+
+  ['D','P','H','E'].forEach(letter => {
+    const meta = LETTER_META[letter];
+    const value = sums[letter];
+
+    const row = document.createElement('div');
+    row.className = 'chart-row';
+
+    const label = document.createElement('div');
+    label.className = 'chart-label letter-' + letter;
+    label.textContent = meta.name;
+
+    const track = document.createElement('div');
+    track.className = 'chart-track';
+
+    const band = document.createElement('div');
+    band.className = 'chart-band';
+    band.style.left = pct(BAND_LO) + '%';
+    band.style.width = (pct(BAND_HI)-pct(BAND_LO)) + '%';
+    track.appendChild(band);
+
+    ticks.forEach(t => {
+      const gl = document.createElement('div');
+      gl.className = 'chart-gridline';
+      gl.style.left = pct(t) + '%';
+      track.appendChild(gl);
+    });
+
+    const fill = document.createElement('div');
+    fill.className = 'chart-fill';
+    fill.style.width = Math.max(0, Math.min(100, pct(value))) + '%';
+    fill.style.background = `var(${meta.css})`;
+    track.appendChild(fill);
+
+    const valEl = document.createElement('div');
+    valEl.className = 'chart-value';
+    valEl.textContent = value;
+
+    row.appendChild(label);
+    row.appendChild(track);
+    row.appendChild(valEl);
+    chartEl.appendChild(row);
+  });
+
+  const axis = document.createElement('div');
+  axis.className = 'chart-axis';
+  const axisSpacer1 = document.createElement('div');
+  const axisTicksWrap = document.createElement('div');
+  axisTicksWrap.className = 'axis-ticks';
+  ticks.forEach(t => {
+    const tick = document.createElement('span');
+    tick.className = 'axis-tick';
+    tick.style.left = pct(t) + '%';
+    tick.textContent = t;
+    axisTicksWrap.appendChild(tick);
+  });
+  const axisSpacer2 = document.createElement('div');
+  axis.appendChild(axisSpacer1);
+  axis.appendChild(axisTicksWrap);
+  axis.appendChild(axisSpacer2);
+  chartEl.appendChild(axis);
+}
+
+calcBtn.addEventListener('click', () => {
+  const sums = computeSums();
+  renderChart(sums);
+  interpList.innerHTML = '';
+  ['D','P','H','E'].forEach(letter => {
+    const li = document.createElement('li');
+    const meta = LETTER_META[letter];
+    li.innerHTML = `<span class="letter-${letter}" style="font-weight:700;">${meta.name} — ${sums[letter]} pkt:</span> ${interpretationFor(sums[letter])}`;
+    interpList.appendChild(li);
+  });
+  resultsCard.hidden = false;
+  resultsCard.scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(!confirm('Wyczyścić wszystkie udzielone odpowiedzi?')) return;
+  answers = DATA.map(row => row.boxes.map(()=>null));
+  saveAnswers();
+  resultsCard.hidden = true;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
